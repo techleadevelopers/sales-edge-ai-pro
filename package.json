@@ -6,15 +6,13 @@
     "apps/*",
     "packages/*"
   ],
-"scripts": {
-  "prepare": "husky install .husky",
-  "dev": "turbo run dev --parallel",
-  "build": "turbo run build",
-  "lint": "turbo run lint",
-  "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
-  "check-types": "turbo run check-types"
-},
-
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
+    "check-types": "turbo run check-types"
+  },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,md}": [
       "prettier --write",
