@@ -1,0 +1,23 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: { workspace: [web, api] }
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with: { node-version: '18', cache: 'npm' }
+      - name: Install deps
+        run: npm install
+      - name: Build ${{ matrix.workspace }}
+        run: |
+          cd apps/${{ matrix.workspace }}
+          npm run lint
+          npm run check-types    # web
+          npm run test           # api
+          npm run build

@@ -1,10 +1,19 @@
 {
+  // estende seu config base do Next.js
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
+    // garante que os imports sejam resolvidos a partir de apps/web
+    "baseUrl": ".",
+    // mapeia os aliases que você declarou no root tsconfig
+    "paths": {
+      "@salesedge/database": ["../../packages/database/src/index.ts"],
+      "@salesedge/database/*": ["../../packages/database/src/*"]
+      // se tiver mais pacotes em packages, adicione aqui:
+      //"@salesedge/common": ["../../packages/common/src/index.ts"],
+      //"@salesedge/ui/*": ["../../packages/ui/src/*"]
+    },
     "plugins": [
-      {
-        "name": "next"
-      }
+      { "name": "next" }
     ]
   },
   "include": [

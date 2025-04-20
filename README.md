@@ -72,54 +72,155 @@ src/
 
 ---
 
-## Backend (Node.js + NestJS + TypeScript + Prisma)
-```
+🧠 Estrutura Final do Backend (NestJS + Prisma + Kafka + WebSocket)
+ruby
+Copiar
+Editar
 src/
-├── modules/               # Domínios de negócio (cada módulo = feature)
-│   ├── auth/              # Autenticação e autorização
+├── main.ts                          # Bootstrap principal do NestJS
+├── app.module.ts                    # Módulo raiz
+├── setup.ts                         # Seeders e scripts auxiliares
+
+├── config/                          # Configurações e variáveis
+│   ├── configuration.ts             # Carrega variáveis de ambiente
+│   ├── validation.ts                # Schema Joi para validação do .env
+│   └── environments/                # Diferentes ambientes
+│       ├── dev.ts
+│       ├── prod.ts
+│       └── staging.ts
+
+├── database/                        # ORM (Prisma) + migrações
+│   ├── schema.prisma
+│   ├── migrations/
+│   └── prisma.service.ts            # Singleton para conexão Prisma
+
+├── common/                          # Utilitários e elementos globais
+│   ├── guards/                      # AuthGuard, RolesGuard
+│   ├── interceptors/               # Logging, Timeout, Transform
+│   ├── filters/                    # Exception filters
+│   ├── pipes/                      # Validation pipes
+│   ├── decorators/                 # @CurrentUser, @Roles, etc
+│   ├── constants/
+│   └── enums/
+
+├── gateways/                        # WebSockets e eventos tempo real
+│   ├── notifications.gateway.ts     # Eventos de sistema (calls, updates)
+│   └── liveassist.gateway.ts        # Shadowing ao vivo (modo futuro)
+
+├── pipelines/                       # Stream processors (Kafka)
+│   ├── call-transcriber.processor.ts
+│   ├── sentiment-analyzer.processor.ts
+│   └── insights-aggregator.processor.ts
+
+├── auth/                            # Estratégias globais
+│   ├── jwt.strategy.ts
+│   ├── jwt-refresh.strategy.ts
+│   └── local.strategy.ts
+
+├── modules/                         # Domínios de negócio (Clean Architecture)
+│   ├── auth/
 │   │   ├── auth.controller.ts
 │   │   ├── auth.service.ts
-│   │   ├── jwt.strategy.ts
+│   │   ├── auth.module.ts
 │   │   └── dto/
 │   │       ├── login.dto.ts
 │   │       └── register.dto.ts
-│   ├── calls/             # Processamento e análise de calls
+
+│   ├── users/                       # Gestão de usuários e avatares
+│   │   ├── users.controller.ts
+│   │   ├── users.service.ts
+│   │   ├── users.module.ts
+│   │   └── dto/
+│   │       ├── update-user.dto.ts
+│   │       └── upload-avatar.dto.ts
+
+│   ├── calls/                       # Processamento de chamadas
 │   │   ├── calls.controller.ts
 │   │   ├── calls.service.ts
-│   │   ├── calls.processor.ts  # Kafka consumer
+│   │   ├── calls.processor.ts       # Kafka consumer
+│   │   ├── calls.module.ts
 │   │   └── schema/
-│   │       └── call.entity.ts  # Prisma schema mappings
-│   ├── battlecards/       # Módulo de inteligência competitiva
+│   │       └── call.entity.ts
+
+│   ├── battlecards/                 # Comparativos com concorrentes
 │   │   ├── battlecards.controller.ts
 │   │   ├── battlecards.service.ts
+│   │   ├── battlecards.module.ts
 │   │   └── dto/
-│   └── simulator/         # Simulador de negociação
-│       ├── simulator.controller.ts
-│       ├── simulator.service.ts
-│       ├── dto/
-│       └── gateway/       # WebSocket Gateway para simulações em tempo real
-│           └── simulator.gateway.ts
-├── common/                # Utilities e providers reutilizáveis
-│   ├── filters/           # Exception filters
-│   ├── guards/            # RolesGuard, AuthGuard
-│   ├── interceptors/      # Logging, Timeout
-│   └── pipes/             # ValidationPipe configs
-├── config/                # Configurações e variáveis de ambiente
-│   ├── configuration.ts
-│   └── validation.ts      # Joi schema para .env
-├── database/              # Prisma ORM & migrações
-│   ├── schema.prisma
-│   └── migrations/
-├── pipelines/             # Stream processing (Kafka topics, consumers)
-│   └── call-processor.ts
-├── gateways/              # Websocket gateways e notificações em tempo real
-│   └── notifications.gateway.ts
-├── auth/                  # Estratégias e módulos de autenticação globais
-│   └── jwt.strategy.ts
-├── main.ts                # Bootstrap do NestJS
-├── app.module.ts          # Root module
-└── setup.ts               # Seeders e scripts auxiliares
-```
+│   │       ├── create-battlecard.dto.ts
+│   │       └── update-battlecard.dto.ts
+
+│   ├── simulator/                   # Simulador de negociação com IA
+│   │   ├── simulator.controller.ts
+│   │   ├── simulator.service.ts
+│   │   ├── simulator.module.ts
+│   │   └── gateway/
+│   │       └── simulator.gateway.ts
+│   │   └── dto/
+│   │       └── run-simulation.dto.ts
+
+│   ├── integrations/                # Zoom, HubSpot, Salesforce, etc
+│   │   ├── integrations.controller.ts
+│   │   ├── integrations.service.ts
+│   │   ├── integrations.module.ts
+│   │   └── oauth/
+│   │       ├── zoom.strategy.ts
+│   │       ├── hubspot.strategy.ts
+│   │       └── salesforce.strategy.ts
+
+│   ├── billing/                     # Stripe / Paddle
+│   │   ├── billing.controller.ts
+│   │   ├── billing.service.ts
+│   │   ├── billing.module.ts
+│   │   └── webhook.handler.ts       # Escuta eventos de pagamento
+
+│   ├── reports/                     # Dashboard e análises para líderes
+│   │   ├── reports.controller.ts
+│   │   ├── reports.service.ts
+│   │   ├── reports.module.ts
+│   │   └── dto/
+│   │       ├── filter-report.dto.ts
+│   │       └── export-report.dto.ts
+✅ Cobertura de Recursos
+
+Recurso	Presente?	Comentário
+Autenticação com JWT + Refresh Token	✅	Seguro e escalável
+Kafka para processar chamadas e sentimentos	✅	Streaming real-time garantido
+Simulador com WebSocket	✅	Pronto pro avatar e feedback ao vivo
+Avatares e perfis de usuário	✅	Com upload e customização futura
+Integrações externas (CRM, Zoom)	✅	Cada integração isolada via estratégia
+Webhook de pagamentos	✅	Ideal para SaaS por consumo
+Módulo de Relatórios	✅	Insights para RH, vendas, RevOps
+Arquitetura Clean + Escalável	✅	Separação brutal por domínio + service layer
+Segurança e criptografia	✅	TLS + AuthGuards + ISO-ready
+🧩 Tech Stack Alinhada
+
+Camada	Tech Principal
+Framework	NestJS (Node.js)
+ORM	Prisma (PostgreSQL)
+Realtime	WebSocket Gateway + Kafka Streams
+Auth	JWT + Refresh Token
+Infra	AWS (EC2, S3, Cloudflare)
+Payments	Stripe ou Paddle SDK
+CI/CD	Vercel (front) + GitHub Actions
+Monitoramento	Sentry, Datadog, Prometheus
+Logs	Winston ou Pino
+
+infra/
+├── frontend/
+│   └── vercel.json         # Configs do front (envs, rewrites)
+├── backend/
+│   ├── docker-compose.yml  # Build da API local
+│   ├── railway.json        # Deploy automático no Railway
+│   └── prisma/
+│       └── seed.ts         # Popula dados de teste
+├── ci/
+│   ├── github-actions/
+│   │   ├── test.yml        # Testes unitários
+│   │   └── deploy.yml      # Deploy contínuo
+├── observability/
+│   ├── sentry.config.js
+│   └── logrocket.config.ts
 
 ---
 
