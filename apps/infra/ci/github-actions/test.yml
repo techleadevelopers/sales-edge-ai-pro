@@ -1,0 +1,53 @@
+# ci/github-actions/test.yml
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [web, api]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint ${{ matrix.workspace }}
+        run: |
+          cd apps/${{ matrix.workspace }}
+          npm run lint
+
+      - name: Type‑check ${{ matrix.workspace }}
+        if: matrix.workspace == 'web'
+        run: |
+          cd apps/web
+          npm run check-types
+
+      - name: Test ${{ matrix.workspace }}
+        if: matrix.workspace == 'api'
+        run: |
+          cd apps/api
+          npm run test
+
+      - name: Build ${{ matrix.workspace }}
+        run: |
+          cd apps/${{ matrix.workspace }}
+          npm run build
