@@ -3,8 +3,7 @@
     "buildCommand": "npm run build --workspace=web",
     "devCommand": "npm run dev",
     "env": {
-      "HUSKY_SKIP_INSTALL": "1",
-      "NEXT_PUBLIC_SENTRY_DSN": "@next_public_sentry_dsn"
+      "HUSKY_SKIP_INSTALL": "1"
     },
     "rewrites": [
       {
