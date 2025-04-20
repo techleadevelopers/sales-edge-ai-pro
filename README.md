@@ -1,5 +1,167 @@
 💼 Plataforma: SalesEdge AI
 
+
+# Estrutura de Arquitetura Clean para SalesEdge AI
+
+Abaixo, a estrutura completa de pastas e arquivos para o **Frontend** e **Backend**, seguindo princípios de Clean Architecture e organização por domínios e camadas.
+
+---
+
+## Frontend (Next.js + TypeScript + Tailwind)
+```
+src/
+├── components/            # Componentes UI reutilizáveis (atoms, molecules)
+│   ├── Button/
+│   │   ├── Button.tsx
+│   │   ├── Button.test.tsx
+│   │   └── styles.module.css
+│   ├── Modal/
+│   │   ├── Modal.tsx
+│   │   └── styles.module.css
+│   └── ...
+├── containers/            # Componentes de domínio (organismos), combinando UI + lógica mínima
+│   ├── Dashboard/
+│   │   ├── DashboardContainer.tsx
+│   │   ├── DashboardHeader.tsx
+│   │   ├── SummarySection.tsx
+│   │   ├── BattlecardsSection.tsx
+│   │   ├── SimulatorSection.tsx
+│   │   └── styles.module.css
+│   ├── BattlecardSearch/
+│   │   ├── BattlecardSearchContainer.tsx
+│   │   ├── CompetitiveTable.tsx
+│   │   └── styles.module.css
+│   └── ...
+├── pages/                 # Páginas (Next.js routing)
+│   ├── index.tsx          # Login / Landing
+│   ├── dashboard/
+│   │   └── index.tsx      # Painel Principal
+│   ├── battlecards/
+│   │   └── index.tsx      # Battlecards
+│   ├── simulator/
+│   │   ├── index.tsx      # Simulador
+│   │   └── [profile].tsx   # Simulações por perfil de avatar
+│   ├── calls/
+│   │   └── index.tsx      # Minhas Calls
+│   ├── settings/
+│   │   ├── integrations.tsx
+│   │   ├── users.tsx
+│   │   ├── security.tsx
+│   │   └── avatars.tsx
+│   └── _app.tsx           # App wrapper (Context Providers)
+├── hooks/                 # Hooks customizados (useApi, useAuth, useSocket)
+│   ├── useAuth.ts
+│   ├── useWebsocket.ts
+│   └── ...
+├── services/              # Integrações com APIs externas (Zoom, CRM, OpenAI)
+│   ├── apiClient.ts       # Axios/fetch client configurado
+│   ├── zoomService.ts
+│   ├── salesforceService.ts
+│   └── openaiService.ts
+├── contexts/              # Providers de Contexto (Auth, Theme, AppState)
+│   ├── AuthContext.tsx
+│   └── AppContext.tsx
+├── utils/                 # Funções utilitárias gerais
+│   ├── formatDate.ts
+│   └── validate.ts
+├── styles/                # Estilos globais e configurações Tailwind
+│   ├── globals.css
+│   └── tailwind.config.js
+└── tsconfig.json          # Configuração TypeScript
+```
+
+---
+
+## Backend (Node.js + NestJS + TypeScript + Prisma)
+```
+src/
+├── modules/               # Domínios de negócio (cada módulo = feature)
+│   ├── auth/              # Autenticação e autorização
+│   │   ├── auth.controller.ts
+│   │   ├── auth.service.ts
+│   │   ├── jwt.strategy.ts
+│   │   └── dto/
+│   │       ├── login.dto.ts
+│   │       └── register.dto.ts
+│   ├── calls/             # Processamento e análise de calls
+│   │   ├── calls.controller.ts
+│   │   ├── calls.service.ts
+│   │   ├── calls.processor.ts  # Kafka consumer
+│   │   └── schema/
+│   │       └── call.entity.ts  # Prisma schema mappings
+│   ├── battlecards/       # Módulo de inteligência competitiva
+│   │   ├── battlecards.controller.ts
+│   │   ├── battlecards.service.ts
+│   │   └── dto/
+│   └── simulator/         # Simulador de negociação
+│       ├── simulator.controller.ts
+│       ├── simulator.service.ts
+│       ├── dto/
+│       └── gateway/       # WebSocket Gateway para simulações em tempo real
+│           └── simulator.gateway.ts
+├── common/                # Utilities e providers reutilizáveis
+│   ├── filters/           # Exception filters
+│   ├── guards/            # RolesGuard, AuthGuard
+│   ├── interceptors/      # Logging, Timeout
+│   └── pipes/             # ValidationPipe configs
+├── config/                # Configurações e variáveis de ambiente
+│   ├── configuration.ts
+│   └── validation.ts      # Joi schema para .env
+├── database/              # Prisma ORM & migrações
+│   ├── schema.prisma
+│   └── migrations/
+├── pipelines/             # Stream processing (Kafka topics, consumers)
+│   └── call-processor.ts
+├── gateways/              # Websocket gateways e notificações em tempo real
+│   └── notifications.gateway.ts
+├── auth/                  # Estratégias e módulos de autenticação globais
+│   └── jwt.strategy.ts
+├── main.ts                # Bootstrap do NestJS
+├── app.module.ts          # Root module
+└── setup.ts               # Seeders e scripts auxiliares
+```
+
+---
+
+### Observações de Organização
+- Cada **módulo** no backend segue o padrão Controller → Service → DTO → Entity.
+- O frontend separa **UI** (components) de **containers** (logica de domínio), e utiliza **services** para comunicação com backend e APIs.
+- Arquitetura limpa (Clean Architecture) assegura dependência de dentro para fora: módulos de domínio não conhecem detalhes de infra.
+- Reuso e legibilidade: nomenclatura consistente e pastas aninhadas por feature.
+
+Com essa estrutura, sua equipe terá um ponto de partida sólido para desenvolver e escalar o SalesEdge AI de forma organizada e sustentável.
+
+
+
+
+🛡️ Auth, Analytics e Performance
+
+Lib / Stack	Uso
+Auth0 / Clerk / NextAuth	Autenticação segura + integração social/SSO
+Vercel Analytics	Performance em tempo real do front-end
+PostHog / Hotjar	Mapas de calor e gravação de sessão (ótimo p/ feedback UX)
+Sentry	Monitoramento de erros
+📱 Mobile / PWA (Extra)
+
+Ferramenta	Uso
+React Native Web + Expo	Versão responsiva híbrida com código compartilhado
+Tauri	Caso queira versão desktop futura com integração nativa (Zoom, arquivos, etc.)
+🔥 Stack UI Sugerida pra SalesEdge AI (Foco em performance e expansão futura)
+txt
+Copiar
+Editar
+UI Base:       shadcn/ui + Lucide Icons + Tailwind CSS
+Gráficos:      Nivo (equipes), ApexCharts (simulação), Recharts (churn simples)
+Interações:    Framer Motion + Lottie + SpeechKit
+IA:            OpenAI SDK + Whisper + Langchain (para prompts estruturados)
+Render 3D:     Unreal Engine via WebSocket (streaming) ou Three.js (fallback)
+Estado/App:    Zustand + React Query
+Auth:          Auth0 com roles
+Analytics:     PostHog (uso) + Sentry (erros)
+
+
+💼 Plataforma: SalesEdge AI
+
 A vantagem competitiva que seu time de vendas nunca teve antes.
 
 🔹 1. Seção "Resumo da Equipe"
@@ -205,166 +367,6 @@ Q3 2024	Launch do Battlecard MVP (integração com Zoom + Salesforce)
 Q4 2024	Simulador com avatares básicos + relatórios de desempenho
 Q1 2025	Versão enterprise com customização de avatares via upload de vídeo
 Q2 2025	Integração com WhatsApp Business para simulações via chat
-# Estrutura de Arquitetura Clean para SalesEdge AI
-
-Abaixo, a estrutura completa de pastas e arquivos para o **Frontend** e **Backend**, seguindo princípios de Clean Architecture e organização por domínios e camadas.
-
----
-
-## Frontend (Next.js + TypeScript + Tailwind)
-```
-src/
-├── components/            # Componentes UI reutilizáveis (atoms, molecules)
-│   ├── Button/
-│   │   ├── Button.tsx
-│   │   ├── Button.test.tsx
-│   │   └── styles.module.css
-│   ├── Modal/
-│   │   ├── Modal.tsx
-│   │   └── styles.module.css
-│   └── ...
-├── containers/            # Componentes de domínio (organismos), combinando UI + lógica mínima
-│   ├── Dashboard/
-│   │   ├── DashboardContainer.tsx
-│   │   ├── DashboardHeader.tsx
-│   │   ├── SummarySection.tsx
-│   │   ├── BattlecardsSection.tsx
-│   │   ├── SimulatorSection.tsx
-│   │   └── styles.module.css
-│   ├── BattlecardSearch/
-│   │   ├── BattlecardSearchContainer.tsx
-│   │   ├── CompetitiveTable.tsx
-│   │   └── styles.module.css
-│   └── ...
-├── pages/                 # Páginas (Next.js routing)
-│   ├── index.tsx          # Login / Landing
-│   ├── dashboard/
-│   │   └── index.tsx      # Painel Principal
-│   ├── battlecards/
-│   │   └── index.tsx      # Battlecards
-│   ├── simulator/
-│   │   ├── index.tsx      # Simulador
-│   │   └── [profile].tsx   # Simulações por perfil de avatar
-│   ├── calls/
-│   │   └── index.tsx      # Minhas Calls
-│   ├── settings/
-│   │   ├── integrations.tsx
-│   │   ├── users.tsx
-│   │   ├── security.tsx
-│   │   └── avatars.tsx
-│   └── _app.tsx           # App wrapper (Context Providers)
-├── hooks/                 # Hooks customizados (useApi, useAuth, useSocket)
-│   ├── useAuth.ts
-│   ├── useWebsocket.ts
-│   └── ...
-├── services/              # Integrações com APIs externas (Zoom, CRM, OpenAI)
-│   ├── apiClient.ts       # Axios/fetch client configurado
-│   ├── zoomService.ts
-│   ├── salesforceService.ts
-│   └── openaiService.ts
-├── contexts/              # Providers de Contexto (Auth, Theme, AppState)
-│   ├── AuthContext.tsx
-│   └── AppContext.tsx
-├── utils/                 # Funções utilitárias gerais
-│   ├── formatDate.ts
-│   └── validate.ts
-├── styles/                # Estilos globais e configurações Tailwind
-│   ├── globals.css
-│   └── tailwind.config.js
-└── tsconfig.json          # Configuração TypeScript
-```
-
----
-
-## Backend (Node.js + NestJS + TypeScript + Prisma)
-```
-src/
-├── modules/               # Domínios de negócio (cada módulo = feature)
-│   ├── auth/              # Autenticação e autorização
-│   │   ├── auth.controller.ts
-│   │   ├── auth.service.ts
-│   │   ├── jwt.strategy.ts
-│   │   └── dto/
-│   │       ├── login.dto.ts
-│   │       └── register.dto.ts
-│   ├── calls/             # Processamento e análise de calls
-│   │   ├── calls.controller.ts
-│   │   ├── calls.service.ts
-│   │   ├── calls.processor.ts  # Kafka consumer
-│   │   └── schema/
-│   │       └── call.entity.ts  # Prisma schema mappings
-│   ├── battlecards/       # Módulo de inteligência competitiva
-│   │   ├── battlecards.controller.ts
-│   │   ├── battlecards.service.ts
-│   │   └── dto/
-│   └── simulator/         # Simulador de negociação
-│       ├── simulator.controller.ts
-│       ├── simulator.service.ts
-│       ├── dto/
-│       └── gateway/       # WebSocket Gateway para simulações em tempo real
-│           └── simulator.gateway.ts
-├── common/                # Utilities e providers reutilizáveis
-│   ├── filters/           # Exception filters
-│   ├── guards/            # RolesGuard, AuthGuard
-│   ├── interceptors/      # Logging, Timeout
-│   └── pipes/             # ValidationPipe configs
-├── config/                # Configurações e variáveis de ambiente
-│   ├── configuration.ts
-│   └── validation.ts      # Joi schema para .env
-├── database/              # Prisma ORM & migrações
-│   ├── schema.prisma
-│   └── migrations/
-├── pipelines/             # Stream processing (Kafka topics, consumers)
-│   └── call-processor.ts
-├── gateways/              # Websocket gateways e notificações em tempo real
-│   └── notifications.gateway.ts
-├── auth/                  # Estratégias e módulos de autenticação globais
-│   └── jwt.strategy.ts
-├── main.ts                # Bootstrap do NestJS
-├── app.module.ts          # Root module
-└── setup.ts               # Seeders e scripts auxiliares
-```
-
----
-
-### Observações de Organização
-- Cada **módulo** no backend segue o padrão Controller → Service → DTO → Entity.
-- O frontend separa **UI** (components) de **containers** (logica de domínio), e utiliza **services** para comunicação com backend e APIs.
-- Arquitetura limpa (Clean Architecture) assegura dependência de dentro para fora: módulos de domínio não conhecem detalhes de infra.
-- Reuso e legibilidade: nomenclatura consistente e pastas aninhadas por feature.
-
-Com essa estrutura, sua equipe terá um ponto de partida sólido para desenvolver e escalar o SalesEdge AI de forma organizada e sustentável.
-
-
-
-
-🛡️ Auth, Analytics e Performance
-
-Lib / Stack	Uso
-Auth0 / Clerk / NextAuth	Autenticação segura + integração social/SSO
-Vercel Analytics	Performance em tempo real do front-end
-PostHog / Hotjar	Mapas de calor e gravação de sessão (ótimo p/ feedback UX)
-Sentry	Monitoramento de erros
-📱 Mobile / PWA (Extra)
-
-Ferramenta	Uso
-React Native Web + Expo	Versão responsiva híbrida com código compartilhado
-Tauri	Caso queira versão desktop futura com integração nativa (Zoom, arquivos, etc.)
-🔥 Stack UI Sugerida pra SalesEdge AI (Foco em performance e expansão futura)
-txt
-Copiar
-Editar
-UI Base:       shadcn/ui + Lucide Icons + Tailwind CSS
-Gráficos:      Nivo (equipes), ApexCharts (simulação), Recharts (churn simples)
-Interações:    Framer Motion + Lottie + SpeechKit
-IA:            OpenAI SDK + Whisper + Langchain (para prompts estruturados)
-Render 3D:     Unreal Engine via WebSocket (streaming) ou Three.js (fallback)
-Estado/App:    Zustand + React Query
-Auth:          Auth0 com roles
-Analytics:     PostHog (uso) + Sentry (erros)
-
-
-
 
 # Turborepo starter
 
