@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      // aponta toda a resolução de módulos para o diretório do monorepo
+      "baseUrl": ".",
+      // aqui definimos cada alias usado no backend
+      "paths": {
+        "@common/*": ["apps/api/src/common/*"],
+        "@modules/*": ["apps/api/src/modules/*"],
+        "@config/*": ["apps/api/src/config/*"],
+        "@database/*": ["apps/api/src/database/*"],
+        "@gateways/*": ["apps/api/src/gateways/*"],
+        "@pipelines/*": ["apps/api/src/pipelines/*"],
+        "@auth/*": ["apps/api/src/auth/*"]
+        // estenda aqui se precisar de mais aliases
+      }
+    }
+  }
+  

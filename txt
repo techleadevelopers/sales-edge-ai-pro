@@ -1,0 +1,193 @@
+
+
+
+🧠 Frontend – Next.js + TypeScript + Tailwind + Modularização por Domínio
+bash
+Copiar
+Editar
+src/
+├── components/                       # Componentes reutilizáveis (UI atômica)
+│   ├── ui/                           # Lib ShadCN UI baseada em Radix
+│   ├── buttons/                      # Botões customizados
+│   ├── cards/                        # Cards de visualização de dados
+│   ├── inputs/                       # Inputs, selects, toggles, etc.
+│   └── modals/                       # Modais gerais do sistema
+
+├── components/conversations/        # Transcrição de chamadas, highlights, sentimentos
+├── components/live-assistant/       # Painel ao vivo com sugestões da IA
+├── components/training/             # Simulador IA (chat/voz) e relatórios
+├── components/analytics/            # Forecasts, gráficos, funis e insights
+├── components/competitors/          # Battlecards, alertas e comparações
+├── components/content/              # Geração de e-mails, scripts e follow-up
+├── components/integrations/         # Conectores com CRMs e settings
+
+├── containers/                      # Domínios com lógica leve + composição UI
+│   ├── DashboardContainer.tsx
+│   ├── CallsContainer.tsx
+│   ├── TrainingContainer.tsx
+│   └── AnalyticsContainer.tsx
+
+├── pages/                           # Rotas do Next.js
+│   ├── index.tsx                    # Landing/Login
+│   ├── dashboard/
+│   │   └── index.tsx
+│   ├── calls/
+│   │   ├── index.tsx
+│   │   └── [id].tsx
+│   ├── competitors/
+│   │   └── index.tsx
+│   ├── training/
+│   │   ├── index.tsx
+│   │   └── [sessionId].tsx
+│   ├── analytics/
+│   │   └── index.tsx
+│   ├── content/
+│   │   └── followup.tsx
+│   ├── settings/
+│   │   ├── integrations.tsx
+│   │   ├── users.tsx
+│   │   └── security.tsx
+│   └── _app.tsx
+
+├── hooks/
+│   ├── useAuth.ts
+│   ├── useWebSocket.ts
+│   ├── useLiveSuggestions.ts
+│   └── useContentAI.ts
+
+├── services/                        # Serviços externos
+│   ├── apiClient.ts
+│   ├── openaiService.ts
+│   ├── crmService.ts
+│   ├── zoomService.ts
+│   └── analyticsService.ts
+
+├── contexts/
+│   ├── AuthContext.tsx
+│   └── AppContext.tsx
+
+├── utils/
+│   ├── formatText.ts
+│   ├── parseTranscription.ts
+│   └── forecastHelpers.ts
+
+├── styles/
+│   ├── tailwind.config.ts
+│   └── globals.css
+
+└── tsconfig.json
+
+
+
+Esses são o coração do SalesEdge AI e devem seguir firmes no MVP, pois geram valor direto para o cliente em termos de vendas, conversão e autonomia:
+
+
+✅ Módulo	Função Estratégica
+calls/	Fonte rica para análise de sentimento, concorrência e insights de follow-up.
+automation/	Executor de tarefas automáticas com base em insights da IA.
+data_science/	Core do motor preditivo: treino, inferência, explicabilidade.
+forecasting/	Traz previsibilidade e confiança na tomada de decisão.
+content_generation/	Geração de e-mails automáticos com base em calls + CRM.
+integrations/	Integrações com CRM e calendário — vitais para alimentar a IA.
+tenants/ + auth/	Gestão multi-tenant e segurança de acesso por função.
+pipelines/	Processamento assíncrono com Kafka — mantém performance.
+common/, config/, database/	Base estrutural de qualquer app escalável.
+gateways/	WebSocket
+
+
+✅ Módulos que usam IA (Resumo)
+
+Módulo	Função	Tipo de IA Usada
+conversation_analysis	Transcrição, sentimentos, tópicos	Whisper, HuggingFace, LLM
+live_assistant	Sugestões ao vivo	STT + NLP + LLM (GPT)
+sales_training	Simulador de calls	LLM + WebSocket + TTS
+content_generation	E-mails, scripts	GPT-4 / ChatGPT
+forecasting	Previsão de deals	ML tradicional + IA
+automation	Follow-up automático	LLM + heurística
+✅ Integrações Suportadas
+CRM: Salesforce, HubSpot, Pipedrive
+
+Videochamada: Zoom, Google Meet
+
+IA: OpenAI, HuggingFace, Whisper
+
+Email/Agenda: Gmail API, Microsoft Graph
+
+Analytics: Power BI, Tableau (via exportação)
+
+
+
+
+
+
+
+apps/api/src/modules
+├── tenants            # Multitenancy + Auth
+│   ├── domain
+│   │   ├── tenant.entity.ts
+│   │   ├── user.entity.ts
+│   │   ├── role.entity.ts
+│   │   └── permission.entity.ts
+│   ├── application
+│   │   ├── create-tenant.usecase.ts
+│   │   ├── invite-user.usecase.ts
+│   │   ├── assign-role.usecase.ts
+│   │   └── validate-tenant-context.usecase.ts
+│   ├── infrastructure
+│   │   ├── tenant.repository.ts
+│   │   └── auth-strategy.ts
+│   └── controllers
+│       └── tenants.controller.ts
+├── integrations       # CRM, Email, Calendários
+│   ├── crm
+│   │   ├── infrastructure
+│   │   │   ├── salesforce.client.ts
+│   │   │   └── hubspot.client.ts
+│   │   └── application
+│   │       └── sync-opportunities.usecase.ts
+│   ├── email
+│   │   ├── infrastructure
+│   │   │   └── email.service.ts
+│   │   └── application
+│   │       └── send-email.usecase.ts
+│   └── calendar
+│       ├── infrastructure
+│       │   └── calendar.service.ts
+│       └── application
+│           └── sync-events.usecase.ts
+├── forecasting        # Analytics preditivo e Pipeline Health
+│   ├── domain
+│   │   ├── deal.entity.ts
+│   │   └── forecast-result.model.ts
+│   ├── application
+│   │   ├── generate-forecast.usecase.ts
+│   │   └── compute-pipeline-health.usecase.ts
+│   ├── infrastructure
+│   │   └── forecast.service.ts
+│   └── controllers
+│       └── forecast.controller.ts
+├── content_generation # Geração de e‑mails e scripts AI
+│   ├── domain
+│   │   └── draft-email.model.ts
+│   ├── application
+│   │   ├── generate-email.usecase.ts
+│   │   └── generate-script.usecase.ts
+│   ├── infrastructure
+│   │   └── openai.provider.ts
+│   └── controllers
+│       └── content-generation.controller.ts
+└── automation         # Agente de follow‑up autônomo
+    ├── domain
+    │   └── followup-task.entity.ts
+    ├── application
+    │   └── run-followups.usecase.ts
+    ├── infrastructure
+    │   └── auto-followup.service.ts
+    └── controllers
+        └── automation.controller.ts
+
+
+
+
+
+

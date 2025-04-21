@@ -1,5 +1,5 @@
+// apps/api/tsconfig.json
 {
-  // Estende o tsconfig raiz, onde estão definidos baseUrl, paths e outras regras compartilhadas
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
@@ -17,14 +17,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
-
-    // Herdado do root, mas reafirmado aqui para deixar claro
-    "baseUrl": "./",
-    "paths": {
-      "@salesedge/database": ["../../packages/database/src/index.ts"],
-      "@salesedge/database/*": ["../../packages/database/src/*"]
-    }
+    "noFallthroughCasesInSwitch": false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

@@ -12,16 +12,14 @@
   },
   "dependencies": {
     "@repo/ui": "*",
-    "next": "^15.3.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "next": "^15.3.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@types/node": "^22.14.0",
-    "@types/react": "19.1.0",
-    "@types/react-dom": "19.1.1",
     "eslint": "^9.25.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.1",
